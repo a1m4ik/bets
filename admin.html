@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адмінка</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Підключити стилі -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        #container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #betsList {
+            margin-top: 20px;
+        }
+        #addPointsSection {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #usernameInput {
+            width: 200px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #pointsInput {
+            width: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Адмінка - Управління ставками</h1>
+        <button onclick="showBets()">Показати ставки</button>
+        <button onclick="settleBets(true)">Визначити успіх</button>
+        <button onclick="settleBets(false)">Визначити невдачу</button>
+
+        <div id="betsList"></div>
+
+        <!-- Секція для нарахування балів -->
+        <div id="addPointsSection">
+            <h2>Нарахувати бали</h2>
+            <input type="text" id="usernameInput" placeholder="Логін користувача">
+            <input type="number" id="pointsInput" placeholder="Кількість балів">
+            <button onclick="addPoints()">Нарахувати</button>
+        </div>
+    </div>
+
+    <script>
+        let bets = JSON.parse(localStorage.getItem('bets')) || []; // Отримати ставки з localStorage
+        const userBalances = JSON.parse(localStorage.getItem('userBalances')) || {
+            'Mykyta': 50,
+            'David': 50,
+            'Kirill': 50,
+            'Sanya': 50
+        }; // Початковий баланс для кожного користувача
+
+        // Функція для показу ставок
+        function showBets() {
+            const betsList = document.getElementById('betsList');
+            betsList.innerHTML = ''; // Очистити список ставок
+            bets.forEach(bet => {
+                const betElement = document.createElement('div');
+                betElement.innerText = `${bet.user} став ${bet.amount} балів на коефіцієнт ${bet.odds}`;
+                betsList.appendChild(betElement);
+            });
+        }
+
+        // Функція для визначення результату ставок
+        function settleBets(isSuccess) {
+            const multiplier = isSuccess ? 1.7 : 0; // Задати множник
+            bets.forEach(bet => {
+                if (isSuccess) {
+                    userBalances[bet.user] += bet.amount * multiplier; // Дод

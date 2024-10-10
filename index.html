@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Основний сайт</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Підключити стилі -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        #container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .event {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Система ставок</h1>
+
+        <div id="loginSection">
+            <h2>Авторизація</h2>
+            <input type="text" id="username" placeholder="Логін">
+            <input type="password" id="password" placeholder="Пароль">
+            <button onclick="login()">Увійти</button>
+        </div>
+
+        <div id="userSection" style="display:none;">
+            <h2>Ставка на подію</h2>
+            <div class="event">
+                <p>Чи поцілує людина коня?</p>
+                <p>Коефіцієнти: 1.7, 1.81</p>
+                <input type="number" id="bet" placeholder="Введіть кількість балів" max="50">
+                <button onclick="placeBet(1.7)">Ставка на 1.7</button>
+                <button onclick="placeBet(1.81)">Ставка на 1.81</button>
+            </div>
+            <h3>Ваш баланс: <span id="balance">50</span> балів</h3>
+            <h4><a href="admin.html">Перейти до адмінки</a></h4> <!-- Посилання на адмінку -->
+        </div>
+    </div>
+
+    <script>
+        const users = {
+            'Mykyta': 'siborut123y',
+            'David': 'penis123y',
+            'Kirill': 'arab123y',
+            'Sanya': 'tadgik123y'
+        };
+
+        let currentUser = null;
+        let currentBalance = 50; // Початковий баланс користувача
+        let bets = []; // Місце для ставок
+
+        // Функція для авторизації
+        function login() {
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
+
+            if (users[usernameInput] && users[usernameInput] === passwordInput) {
+                currentUser = usernameInput;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('balance').innerText = currentBalance;
+            } else {
+                alert("Неправильний логін або пароль!");
+            }
+        }
+
+        // Функція для ставки
+        function placeBet(odds) {
+            const betInput = document.getElementById('bet');
+            const betAmount = parseInt(betInput.value);
+
+            if (isNaN(betAmount) || betAmount <= 0 || betAmount > currentBalance) {
+                alert("Введіть коректну ставку (1 - 50 балів)");
+                return;
+            }
+
+            currentBalance -= betAmount; // Зменшити баланс
+            document.getElementById('balance').innerText = currentBalance;
+            bets.push({ user: currentUser, amount: betAmount, odds: odds });
+            alert(`Ставка на ${odds} успішно зроблена!`);
+            betInput.value = '';
+            localStorage.setItem('bets', JSON.stringify(bets)); // Зберегти ставки
+        }
+    </script>
+</body>
+</html>
